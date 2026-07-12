@@ -15,7 +15,7 @@ scrub / speed behave identically for a bubble sort and for A\*, every run is
 deterministic and replayable, and the counters (comparisons, swaps, reads,
 writes, cells visited, path length) are the *real* numbers, not decoration.
 
-21 algorithms in all:
+24 algorithms in all:
 
 | Category | Algorithms |
 | --- | --- |
@@ -23,7 +23,7 @@ writes, cells visited, path length) are the *real* numbers, not decoration.
 | Pathfinding (interactive grid) | Dijkstra, A\* (Manhattan), BFS, DFS, Greedy Best-First, Bidirectional BFS |
 | Graph (weighted node-link) | Prim MST, Kruskal MST, Kahn topological sort, Bellman-Ford (negative edges) |
 | Search (value strip) | Linear, Binary |
-| Trees & generation | BST insert + in/pre/post-order, maze generation, union-find with path compression |
+| Trees & generation | BST insert, in-order, pre-order and post-order traversals (four separate picks), maze generation, union-find with path compression |
 
 The pathfinding grid is fully interactive — draw walls, drag the start and end,
 paint weighted cells, or stamp a generated maze. State (algorithm, seed, size,
