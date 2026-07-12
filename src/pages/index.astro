@@ -1,0 +1,227 @@
+---
+import '../styles/app.css';
+import { ALL_META } from '../lib/registry';
+
+const base = import.meta.env.BASE_URL;
+const withBase = (p: string) => `${base.replace(/\/$/, '')}/${p.replace(/^\//, '')}`;
+const site = 'https://sreenivas-sadhu-prabhakara.github.io';
+const canonical = `${site}${base.replace(/\/$/, '')}/`;
+const title = 'SortScope — Interactive Algorithm Visualizer';
+const description =
+  'A lab-instrument algorithm visualizer: watch sorting, Dijkstra & A* pathfinding, BFS/DFS, graph MSTs, binary search, BSTs and more run step by step with synced pseudocode and honest live stats. 100% client-side, zero network.';
+
+// Serialize a lightweight structured-data itemList of the algorithms covered.
+const algoNames = ALL_META.map((m) => m.name);
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'SortScope',
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Any (web browser)',
+  description,
+  url: canonical,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  featureList: algoNames.join(', '),
+};
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'none'; base-uri 'self'; form-action 'none'; object-src 'none'"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+    <link rel="icon" href={withBase('favicon.ico')} sizes="any" />
+    <meta name="theme-color" content="#0e1416" />
+    <meta
+      name="keywords"
+      content="algorithm visualizer, sorting algorithm visualizer, dijkstra algorithm visualization, a star pathfinding visualizer, bfs dfs visualization, binary search visualizer, merge sort, quicksort, graph algorithms, minimum spanning tree"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="SortScope" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonld)} is:inline />
+  </head>
+
+  <body>
+    <a class="skip" href="#surface">Skip to visualization</a>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 24" width="40" height="24">
+            <polyline
+              points="0,12 5,12 8,4 12,20 16,7 20,16 24,10 28,10 40,10"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            />
+          </svg>
+        </span>
+        <div class="brand-text">
+          <span class="brand-name">SortScope</span>
+          <span class="brand-sub">algorithm visualizer</span>
+        </div>
+      </div>
+      <p class="tagline">
+        Every algorithm emits the same discrete <em>steps</em>. One playback engine
+        drives them all — deterministic, replayable, and yours to scrub.
+      </p>
+    </header>
+
+    <nav class="categories" id="categories" role="tablist" aria-label="Algorithm categories"></nav>
+
+    <main class="layout">
+      <section class="stage" aria-label="Visualization stage">
+        <div class="picker" id="algo-picker" role="group" aria-label="Choose an algorithm"></div>
+
+        <div class="surface-frame">
+          <div id="surface" class="surface" data-cat="sorting" tabindex="-1"></div>
+          <p class="statusline" id="statusline" aria-live="polite">Ready — press Play or Step</p>
+        </div>
+
+        <!-- Transport bar — shared by every category -->
+        <div class="transport" role="group" aria-label="Playback controls">
+          <button id="t-reset" class="tbtn" type="button" title="Reset (R)" aria-label="Reset to start">
+            <span class="tico">⏮</span>
+          </button>
+          <button id="t-back" class="tbtn" type="button" title="Step back (←)" aria-label="Step back">
+            <span class="tico">◀</span>
+          </button>
+          <button id="t-play" class="tbtn tbtn-play" type="button" title="Play / Pause (Space)" aria-pressed="false">
+            <span class="tico pf-ico" aria-hidden="true">▶</span><span class="pf-label">Play</span>
+          </button>
+          <button id="t-fwd" class="tbtn" type="button" title="Step forward (→)" aria-label="Step forward">
+            <span class="tico">▶</span>
+          </button>
+          <button id="t-end" class="tbtn" type="button" title="Jump to result" aria-label="Jump to end">
+            <span class="tico">⏭</span>
+          </button>
+
+          <div class="scrub-wrap">
+            <input id="t-scrub" class="scrub" type="range" min="0" max="1" value="0" step="1" aria-label="Scrub through steps" />
+            <span id="t-count" class="count tnum">0 / 0</span>
+          </div>
+
+          <label class="speed">
+            <span class="speed-cap">speed</span>
+            <input id="t-speed" type="range" min="0.25" max="6" step="0.25" value="1.5" aria-label="Playback speed" />
+            <span id="speed-label" class="tnum">1.5×</span>
+          </label>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="Algorithm details">
+        <div class="algo-head">
+          <h1 id="algo-name" class="algo-name">Bubble Sort</h1>
+          <p id="algo-blurb" class="algo-blurb"></p>
+        </div>
+
+        <div class="controls">
+          <div class="ctl" id="ctl-array">
+            <div class="ctl-row">
+              <label class="field">
+                <span>bars</span>
+                <input id="in-size" type="number" min="5" max="120" value="40" inputmode="numeric" />
+              </label>
+              <label class="field">
+                <span>seed</span>
+                <input id="in-seed" type="number" min="0" value="7" inputmode="numeric" />
+              </label>
+              <button id="in-shuffle" class="mini" type="button">shuffle</button>
+            </div>
+          </div>
+
+          <div class="ctl" id="ctl-target" hidden>
+            <label class="field">
+              <span>target</span>
+              <input id="in-target" type="number" min="1" max="999" value="42" inputmode="numeric" />
+            </label>
+            <span class="hint">wrapped into range so it's always found</span>
+          </div>
+
+          <div class="ctl" id="ctl-grid" hidden>
+            <p class="hint">Drag to draw walls. Drag the <b class="chip chip-s">start</b> and <b class="chip chip-e">end</b> nodes.</p>
+            <div class="ctl-row">
+              <button id="in-clear" class="mini" type="button">clear grid</button>
+              <button id="in-maze-fill" class="mini" type="button">maze walls</button>
+              <label class="toggle">
+                <input id="in-weight-mode" type="checkbox" />
+                <span>paint <b class="chip chip-w">weights</b> (+8)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="ctl" id="ctl-maze" hidden>
+            <div class="ctl-row">
+              <button id="in-maze-new" class="mini" type="button">new maze</button>
+              <span class="hint">recursive backtracker, seeded</span>
+            </div>
+          </div>
+
+          <div class="ctl-row ctl-share">
+            <button id="in-share" class="mini mini-share" type="button">copy share link</button>
+            <span class="hint" id="ctl-seed-note">state lives in the URL — shareable, replayable</span>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Live counters">
+          <div class="stat" data-stat="comparisons"><span class="stat-k">comparisons</span><span class="stat-v tnum">0</span></div>
+          <div class="stat" data-stat="swaps"><span class="stat-k">swaps</span><span class="stat-v tnum">0</span></div>
+          <div class="stat" data-stat="reads"><span class="stat-k">reads</span><span class="stat-v tnum">0</span></div>
+          <div class="stat" data-stat="writes"><span class="stat-k">writes</span><span class="stat-v tnum">0</span></div>
+          <div class="stat" data-stat="visited"><span class="stat-k">visited</span><span class="stat-v tnum">0</span></div>
+          <div class="stat" data-stat="relaxations"><span class="stat-k">relaxations</span><span class="stat-v tnum">0</span></div>
+          <div class="stat" data-stat="pathLength"><span class="stat-k">path length</span><span class="stat-v tnum">0</span></div>
+        </div>
+
+        <div class="pseudo-wrap">
+          <h2 class="panel-h">pseudocode</h2>
+          <ol id="pseudocode" class="pseudocode" aria-label="Pseudocode, executing line highlighted"></ol>
+        </div>
+
+        <div class="complexity-wrap">
+          <h2 class="panel-h">complexity</h2>
+          <dl id="complexity" class="complexity"></dl>
+          <p id="algo-notes" class="algo-notes"></p>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="foot">
+      <p>
+        <b>SortScope</b> — 21 algorithms across sorting, pathfinding, graphs, search and trees.
+        Runs entirely in your browser; nothing leaves the device.
+      </p>
+      <p class="foot-legend" aria-hidden="true">
+        <span class="lg lg-compare">compare</span>
+        <span class="lg lg-swap">swap / write</span>
+        <span class="lg lg-visit">visited</span>
+        <span class="lg lg-frontier">frontier</span>
+        <span class="lg lg-path">path</span>
+        <span class="lg lg-sorted">settled</span>
+      </p>
+    </footer>
+
+    <script>
+      import '../scripts/app.ts';
+    </script>
+  </body>
+</html>
