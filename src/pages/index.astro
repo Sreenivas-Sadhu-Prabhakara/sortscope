@@ -6,22 +6,77 @@ const base = import.meta.env.BASE_URL;
 const withBase = (p: string) => `${base.replace(/\/$/, '')}/${p.replace(/^\//, '')}`;
 const site = 'https://sreenivas-sadhu-prabhakara.github.io';
 const canonical = `${site}${base.replace(/\/$/, '')}/`;
+const ogImage = `${canonical}og.png`;
+// ~55-char title tuned for "algorithm visualizer" search demand.
 const title = 'SortScope — Interactive Algorithm Visualizer';
+// ~150-char meta description leading with the highest-intent phrases.
 const description =
-  'A lab-instrument algorithm visualizer: watch sorting, Dijkstra & A* pathfinding, BFS/DFS, graph MSTs, binary search, BSTs and more run step by step with synced pseudocode and honest live stats. 100% client-side, zero network.';
+  'Free algorithm visualizer: watch sorting, Dijkstra & A* pathfinding, BFS/DFS, MSTs, binary search and BSTs run step by step with synced pseudocode.';
 
 // Serialize a lightweight structured-data itemList of the algorithms covered.
 const algoNames = ALL_META.map((m) => m.name);
-const jsonld = {
+const appLd = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'SortScope',
   applicationCategory: 'EducationalApplication',
   operatingSystem: 'Any (web browser)',
+  browserRequirements: 'Requires JavaScript. Runs fully client-side.',
   description,
   url: canonical,
+  image: ogImage,
+  isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   featureList: algoNames.join(', '),
+  author: { '@type': 'Person', name: 'Sreenivas Sadhu Prabhakara' },
+};
+
+// FAQPage — real long-tail questions people search around algorithm viz.
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What is the best free algorithm visualizer to learn sorting?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'SortScope is a free, in-browser visualizer that animates bubble, insertion, selection, merge, quick and heap sort step by step. A scrub bar lets you step forward and back, the executing pseudocode line stays highlighted, and live counters show real comparisons, swaps, reads and writes so you can see why one sort is faster than another.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do Dijkstra and A* pathfinding differ, and can I compare them?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Dijkstra expands nodes purely by distance from the start, while A* adds a heuristic (here, Manhattan distance) to steer toward the goal, so it usually visits far fewer cells. In SortScope you can draw walls, drag the start and end, and run each on the same grid to compare the visited count and path length side by side.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Which algorithms can I visualize in SortScope?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '21 in total: six sorts (bubble, insertion, selection, merge, quick, heap); six pathfinders (Dijkstra, A*, BFS, DFS, greedy best-first, bidirectional BFS); graph algorithms (Prim and Kruskal MST, Kahn topological sort, Bellman-Ford with negative edges); linear and binary search; and trees and generation (BST insert with in/pre/post-order traversal, maze generation, and union-find).',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Does SortScope send my data anywhere or need an account?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No. SortScope runs entirely in your browser with no account and no network calls — a strict Content-Security-Policy sets connect-src to none, so nothing can leave the device. Your grid, seed and chosen algorithm are stored only in the URL, which makes any run shareable and exactly replayable.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Why does binary search need a sorted array?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Binary search halves the search range each step by comparing the target to the middle element, which only works if the data is ordered. SortScope sorts the value strip first, then animates the shrinking low/high window so you can see it reach the answer in about log2(n) comparisons instead of the n comparisons linear search needs.",
+      },
+    },
+  ],
 };
 ---
 
@@ -38,6 +93,8 @@ const jsonld = {
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
     <link rel="icon" href={withBase('favicon.ico')} sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase('apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('site.webmanifest')} />
     <meta name="theme-color" content="#0e1416" />
     <meta
       name="keywords"
@@ -51,11 +108,17 @@ const jsonld = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content="SortScope" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SortScope — an oscilloscope-style trace of a sort in progress, over the label Interactive Algorithm Visualizer." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(jsonld)} is:inline />
+    <script type="application/ld+json" set:html={JSON.stringify(appLd)} is:inline />
+    <script type="application/ld+json" set:html={JSON.stringify(faqLd)} is:inline />
   </head>
 
   <body>
@@ -206,10 +269,17 @@ const jsonld = {
     </main>
 
     <footer class="foot">
-      <p>
-        <b>SortScope</b> — 21 algorithms across sorting, pathfinding, graphs, search and trees.
-        Runs entirely in your browser; nothing leaves the device.
-      </p>
+      <div class="foot-main">
+        <p>
+          <b>SortScope</b> — 21 algorithms across sorting, pathfinding, graphs, search and trees.
+          Runs entirely in your browser; nothing leaves the device.
+        </p>
+        <p class="foot-legal">
+          MIT-licensed and free to use. Built as a teaching aid — it visualizes standard
+          textbook algorithms and is provided as is, with no warranty; verify anything you
+          rely on. © 2026 Sreenivas Sadhu Prabhakara.
+        </p>
+      </div>
       <p class="foot-legend" aria-hidden="true">
         <span class="lg lg-compare">compare</span>
         <span class="lg lg-swap">swap / write</span>

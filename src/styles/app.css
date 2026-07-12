@@ -49,6 +49,10 @@
 
 * { box-sizing: border-box; }
 
+/* A class like .ctl { display:flex } out-specifies the UA [hidden] rule, so
+   toggled panels would stay visible. Restore the intent explicitly. */
+[hidden] { display: none !important; }
+
 html { -webkit-text-size-adjust: 100%; }
 
 body {
@@ -527,8 +531,12 @@ input[type="range"]::-moz-range-thumb {
   padding: 16px clamp(14px, 3vw, 34px);
   color: var(--ink-faint);
   font-size: 12px;
-  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  display: flex; justify-content: space-between; gap: 16px 28px; flex-wrap: wrap;
+  align-items: flex-start;
 }
+.foot p { margin: 0; }
+.foot-main { display: flex; flex-direction: column; gap: 6px; max-width: 70ch; }
+.foot-legal { color: var(--ink-faint); font-size: 11px; line-height: 1.5; }
 .foot b { color: var(--ink-dim); }
 .foot-legend { display: flex; gap: 12px; flex-wrap: wrap; margin: 0; }
 .lg { display: flex; align-items: center; gap: 5px; }

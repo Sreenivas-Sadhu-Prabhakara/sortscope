@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 512px; height: 512px; }
+  body {
+    background: #0e1416;
+    position: relative;
+    overflow: hidden;
+  }
+  /* rounded-square instrument plate — NOT full-bleed so the maskable safe
+     zone (center 80%) holds the whole mark; padded edge is pure bg. */
+  .plate {
+    position: absolute;
+    inset: 56px;              /* keep mark inside maskable safe zone */
+    border-radius: 96px;
+    background:
+      radial-gradient(120% 120% at 30% 20%, #16211f 0%, #0a1211 70%, #081010 100%);
+    box-shadow: inset 0 0 0 4px #24332f, inset 0 0 70px rgba(0,0,0,0.6);
+    overflow: hidden;
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(120,200,175,0.07) 1.5px, transparent 1.5px),
+      linear-gradient(90deg, rgba(120,200,175,0.07) 1.5px, transparent 1.5px);
+    background-size: 40px 40px;
+    background-position: center;
+  }
+  .baseline {
+    position: absolute; left: 8%; right: 8%; top: 62%;
+    height: 2px; background: rgba(120,200,175,0.16);
+  }
+  svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+  <div class="plate">
+    <div class="grid"></div>
+    <div class="baseline"></div>
+    <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <filter id="g" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- a single decisive phosphor trace: the SortScope waveform mark.
+           Rises through a scan, spikes, and settles — reads at 16px. -->
+      <polyline
+        points="46,250 92,250 118,132 150,132 176,300 210,300 236,86 274,86 300,214 340,214 366,150"
+        fill="none" stroke="#4fe3a1" stroke-width="16"
+        stroke-linejoin="round" stroke-linecap="round" filter="url(#g)"/>
+      <circle cx="366" cy="150" r="15" fill="#4fe3a1" filter="url(#g)"/>
+    </svg>
+  </div>
+</body>
+</html>

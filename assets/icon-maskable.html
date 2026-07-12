@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 512px; height: 512px; }
+  /* Maskable: background is FULL-BLEED (no rounded plate) so the OS mask can
+     crop to any shape without exposing transparent corners. The mark sits in
+     the center 80% safe zone. */
+  body {
+    background:
+      radial-gradient(130% 130% at 30% 22%, #16211f 0%, #0c1413 62%, #0a1211 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(120,200,175,0.06) 1.5px, transparent 1.5px),
+      linear-gradient(90deg, rgba(120,200,175,0.06) 1.5px, transparent 1.5px);
+    background-size: 44px 44px;
+    background-position: center;
+  }
+  .baseline {
+    position: absolute; left: 18%; right: 18%; top: 61%;
+    height: 3px; background: rgba(120,200,175,0.14);
+  }
+  svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="baseline"></div>
+  <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <filter id="g" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="5.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <!-- mark kept within center safe zone (~ x 100–300, y 130–280) -->
+    <polyline
+      points="104,242 138,242 160,158 186,158 208,286 236,286 258,120 290,120 312,214 344,214"
+      fill="none" stroke="#4fe3a1" stroke-width="15"
+      stroke-linejoin="round" stroke-linecap="round" filter="url(#g)"/>
+    <circle cx="344" cy="214" r="14" fill="#4fe3a1" filter="url(#g)"/>
+  </svg>
+</body>
+</html>
